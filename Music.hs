@@ -12,17 +12,17 @@ data PitchClass = Cff | Cf | C | Dff | Cs | Df | Css | D | Eff | Ds | Ef | Fff |
 data Primitive a = Note Dur a | Rest Dur
 
 data Music a = Prim (Primitive a)
-						 | Music a :+: Music a -- Sequential 
-						 | Music a :=: Music a -- Parallel
-						 | Modify Control (Music a)
+             | Music a :+: Music a -- Sequential 
+             | Music a :=: Music a -- Parallel
+             | Modify Control (Music a)
 
 infixr 5 :+:, :=:
 
 data Control = Tempo Rational
-						 | Transpose AbsPitch
-						 | Instrument InstrumentName
-						 | Phrase [PhraseAttribute]
-						 | Player PlayerName
+             | Transpose AbsPitch
+             | Instrument InstrumentName
+             | Phrase [PhraseAttribute]
+             | Player PlayerName
 
 data PhraseAttribute
 type AbsPitch = Int
@@ -47,8 +47,8 @@ cff x y = note y (Cff, x)
 -- Similar funcs for other Pitchclasses
 pcToInt :: PitchClass -> Int
 pcToInt x = case x of
-						Cff -> -2
-						Cf  -> -1 -- include other pitch classes
+            Cff -> -2
+            Cf  -> -1 -- include other pitch classes
 
 absPitch :: Pitch -> AbsPitch
 absPitch (pc, octv) = 12 * octv + pcToInt pc
