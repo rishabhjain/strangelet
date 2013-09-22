@@ -1,3 +1,5 @@
+module Music where
+
 type Octave = Int
 type Pitch = (PitchClass, Octave)
 type Dur = Rational
@@ -5,16 +7,16 @@ type Dur = Rational
 qn :: Dur
 qn = 1/4 -- quarter note
 
-data PitchClass = Cff | Cf | C | Dff | Cs | Df | Css | D | Eff | Ds | Ef | Fff | Dss | E | Es | Ff | F | Gff | Ess | Fs | Gf | Fss | G | Aff | Gs | Af | Gss | A | Bff | As | Bf | Ass | B | Bs | Bss
+data PitchClass = Cff | Cf | C | Dff | Cs | Df | Css | D | Eff | Ds | Ef | Fff | Dss | E | Es | Ff | F | Gff | Ess | Fs | Gf | Fss | G | Aff | Gs | Af | Gss | A | Bff | As | Bf | Ass | B | Bs | Bss deriving (Eq, Ord, Show, Read, Enum)
 
 -- data Primitive = Note Dur Pitch | Rest Dur
 
-data Primitive a = Note Dur a | Rest Dur
+data Primitive a = Note Dur a | Rest Dur deriving (Show, Eq, Ord)
 
 data Music a = Prim (Primitive a)
              | Music a :+: Music a -- Sequential 
              | Music a :=: Music a -- Parallel
-             | Modify Control (Music a)
+             | Modify Control (Music a) deriving (Show, Eq, Ord)
 
 infixr 5 :+:, :=:
 
@@ -22,13 +24,24 @@ data Control = Tempo Rational
              | Transpose AbsPitch
              | Instrument InstrumentName
              | Phrase [PhraseAttribute]
-             | Player PlayerName
+             | Player PlayerName deriving (Show, Eq, Ord)
 
-data PhraseAttribute
+data PhraseAttribute = Dyn Dynamic | Tmp Tempo | Art Articulation | Orn Ornament deriving (Eq, Ord, Show)
+
+data Dynamic = Accent Rational deriving (Eq, Ord, Show) -- Add other constructors
+
+data StdLoudness = PPP | PP deriving (Eq, Ord, Show, Enum) -- Add other constructors
+
+data Tempo = Ritardando Rational | Accelerando Rational deriving (Eq, Ord, Show)
+
+data Articulation = Staccato Rational deriving (Eq, Ord, Show)
+
+data Ornament = Trill deriving (Eq, Ord, Show)
+
 type AbsPitch = Int
 type PlayerName = String
 
-data InstrumentName = Guitar | Violin | Piano
+data InstrumentName = Guitar | Violin | Piano deriving (Show,Eq, Ord)
 
 note :: Dur -> a -> Music a
 note = (Prim .) . Note
@@ -130,3 +143,12 @@ grace i d _                 = error "grace: grance can only be added to a note"
 
 -- grace2
 -- Percussion
+
+mMap :: (a -> b) -> Music a -> Music b
+mMap f (Prim (Note d a)) = note d $ f a
+mMap f (Prim (Rest d))   = rest d
+mMap f (m1 :+: m2)       = mMap f m1 :+: mMap f m2
+mMap f (m1 :=: m2)       = mMap f m1 :=: mMap f m2
+mMap f (Modify x y)      = Modify x $ mMap f y
+
+-- mFold
