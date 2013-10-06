@@ -67,7 +67,7 @@ absPitch :: Pitch -> AbsPitch
 absPitch (pc, octv) = 12 * octv + pcToInt pc
 
 pitch :: AbsPitch -> Pitch
-pitch ap = let (octv, n) = divMod 12 ap in ([C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B] !! n,octv)
+pitch ap = let (octv, n) = divMod ap 12 in ([C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B] !! n,octv)
 
 trans :: Int -> Pitch -> Pitch
 trans i p = pitch $ absPitch p + i
