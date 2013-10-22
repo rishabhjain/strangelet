@@ -13,7 +13,7 @@ mkNote1 :: AbsPitch -> Music Pitch
 mkNote1 = note tn . pitch
 
 mkLine1 :: [AbsPitch] -> Music Pitch
-mkLine1 = line . (take 32) . map mkNote1
+mkLine1 = line . take 32 . map mkNote1
 
 m1 :: Music Pitch -- Linear Distribution
 m1  = mkLine1 $ map toAbsP1 $ f (mkStdGen 11) where f z = let (x,y) = linear z in x : f y
